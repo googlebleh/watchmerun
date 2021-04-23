@@ -8,27 +8,38 @@ import plotly.graph_objects as go
 
 log = {}
 
-regex = re.compile(r'\|? #(\d+) "(.+?) @ \w+" \((\d+)\)')
+hands_re = re.compile(r"-- starting hand #(\d+)")
+stacks_re = re.compile(r'\|? #(\d+) "(.+?) @ \w+" \((\d+)\)')
 
 with open("poker_now_log_vpWH6-qgxi4ajqq6p7ftY7GgE.csv") as f:
+    # CSV is in reverse chronological order because reasons
     csv_lines = list(csv.DictReader(f))
     for row in reversed(csv_lines):
         entry = row["entry"]
-        if entry.startswith("Player stacks:"):
-            for m in regex.finditer(entry):
+
+        # keep track of what number hand we're on
+        hands_m = hands_re.match(entry)
+        if hands_m:
+            current_hand = int(hands_m.group(1))
+
+        # log stacks for those who played
+        elif entry.startswith("Player stacks:"):
+            for m in stacks_re.finditer(entry):
                 seat_num, player_name, stack = m.groups()
 
                 if player_name not in log:
                     log[player_name] = []
 
-                log[player_name].append(int(stack))
+                data_point = (current_hand, int(stack))
+                log[player_name].append(data_point)
 
 # chart_studio.tools.set_credentials_file(username="googlebleh", api_key="https://youtu.be/oHg5SJYRHA0")
 
 # fig = go.Figure()
 graphs = []
 for player_name, stacklog in log.items():
-    graph_obj = go.Scatter(y=stacklog, mode="lines+markers", name=player_name)
+    hands, stack_values = zip(*stacklog)
+    graph_obj = go.Scatter(x=hands, y=stack_values, mode="lines+markers", name=player_name)
     graphs.append(graph_obj)
 #     fig.add_trace(graph_obj)
 # fig.show()
