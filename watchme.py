@@ -2,6 +2,7 @@
 
 import csv
 import re
+import sys
 
 import chart_studio.plotly as py
 import plotly.graph_objects as go
@@ -11,7 +12,7 @@ log = {}
 hands_re = re.compile(r"-- starting hand #(\d+)")
 stacks_re = re.compile(r'\|? #(\d+) "(.+?) @ \w+" \((\d+)\)')
 
-with open("poker_now_log_vpWH6-qgxi4ajqq6p7ftY7GgE.csv") as f:
+with open(sys.argv[1]) as f:
     # CSV is in reverse chronological order because reasons
     csv_lines = list(csv.DictReader(f))
     for row in reversed(csv_lines):
