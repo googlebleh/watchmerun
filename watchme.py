@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 log = {}
 
 hands_re = re.compile(r"-- starting hand #(\d+)")
-stacks_re = re.compile(r'\|? #(\d+) "(.+?) @ \w+" \((\d+)\)')
+stacks_re = re.compile(r'\|? #(\d+) "(.+?) @ [^\s]+?" \((\d+)\)')
 
 with open(sys.argv[1]) as f:
     # CSV is in reverse chronological order because reasons
